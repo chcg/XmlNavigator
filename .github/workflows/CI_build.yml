@@ -28,17 +28,17 @@ jobs:
 
     - name: zip artifacts for ${{ matrix.build_platform }}
       if: matrix.build_configuration == 'Release'
-      run: 7z a XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip .\build\${{ matrix.build_platform }}\${{ matrix.build_configuration }}\XmlNavigator.dll
+      run: 7z a XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip .\XmlNavigator\bin\${{ matrix.build_platform }}\${{ matrix.build_configuration }}\XmlNavigator.dll
 
     - name: Archive artifacts for ${{ matrix.build_platform }}
       if: matrix.build_configuration == 'Release'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
           path: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
 
     - name: Create release on tagging
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
           files: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
