@@ -1,0 +1,56 @@
+name: CI_build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_configuration: [Release, Debug]
+        build_platform: [x64, x86]
+        
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: MSBuild of plugin dll
+      if: matrix.build_platform == 'x64' && matrix.build_configuration == 'Release'
+      working-directory: .\
+      run: msbuild XmlNavigator.sln /m /p:configuration="${{ matrix.build_configuration }}" /p:platform="${{ matrix.build_platform }}"
+
+    - name: MSBuild of plugin dll
+      if: matrix.build_platform == 'x86' && matrix.build_configuration == 'Release'
+      working-directory: .\
+      run: msbuild XmlNavigator.sln /m /p:configuration="${{ matrix.build_configuration }}" /p:platform="Any CPU"
+
+
+    - uses: olegtarasov/get-tag@v2.1.3
+      id: tagName
+
+    - name: zip artifacts for ${{ matrix.build_platform }}
+      if: matrix.build_platform == 'x64' && matrix.build_configuration == 'Release'
+      run: 7z a XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip .\XmlNavigator\bin\${{ matrix.build_platform }}\${{ matrix.build_configuration }}\XmlNavigator.dll
+
+    - name: zip artifacts for ${{ matrix.build_platform }}
+      if: matrix.build_platform == 'x86' && matrix.build_configuration == 'Release'
+      run: 7z a XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip .\XmlNavigator\bin\${{ matrix.build_configuration }}\XmlNavigator.dll
+
+    - name: Archive artifacts for ${{ matrix.build_platform }}
+      if: matrix.build_configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+          name: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
+          path: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
+
+    - name: Create release on tagging
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+          files: XmlNavigator_${{ steps.tagName.outputs.tag }}_${{ matrix.build_platform }}.zip
+

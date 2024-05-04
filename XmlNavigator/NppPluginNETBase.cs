@@ -43,24 +43,24 @@ namespace NppPluginNET
             return (curScintilla == 0) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
         }
 
-		internal static string GetCurrentFileText( int length = -1 )
-		{
-			if( length == -1 )
-				length = Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0 ).ToInt32();
+        internal static string GetCurrentFileText( int length = -1 )
+        {
+            if( length == -1 )
+                length = Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0 ).ToInt32();
 
-			var text = new StringBuilder( length + 1 );
-			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXT, length + 1, text );
+            var text = new StringBuilder( length + 1 );
+            Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXT, length + 1, text );
 
-			return text.ToString();
-		}
+            return text.ToString();
+        }
 
-		internal static string GetFullCurrentFileName()
-		{
-			StringBuilder builder = new StringBuilder( Win32.MAX_PATH );
-			Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_GETFULLCURRENTPATH, 0, builder );
-			return builder.ToString();
-		}
+        internal static string GetFullCurrentFileName()
+        {
+            StringBuilder builder = new StringBuilder( Win32.MAX_PATH );
+            Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_GETFULLCURRENTPATH, 0, builder );
+            return builder.ToString();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

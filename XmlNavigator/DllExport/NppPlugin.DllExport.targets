@@ -18,6 +18,6 @@
                    InputFileName="$(TargetPath)"
                    FrameworkPath="$(TargetedFrameworkDir);$(TargetFrameworkDirectory)"
                    LibToolDllPath="$(DevEnvDir)"
-                   SdkPath="$(FrameworkSDKDir)"/>
+                   SdkPath="$(SDK40ToolsPath)"/>
   </Target>
 </Project>
